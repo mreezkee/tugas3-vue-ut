@@ -12,6 +12,138 @@
   height: 100vh;
 }
 
+/* Dark and Light Mode */
+body.dark-mode,
+body.dark-mode .content-area,
+body.dark-mode .main-content {
+  background-color: #0f172a; /* Biru dongker sangat gelap */
+  color: #f1f5f9;
+}
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode .title-black {
+  color: #f8fafc;
+}
+
+body.dark-mode .dash-card,
+body.dark-mode .card {
+  background-color: #1e293b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+body.dark-mode .text-subtitle,
+body.dark-mode .card-body p {
+  color: #94a3b8;
+}
+body.dark-mode .btn-theme-toggle {
+  background-color: #334155;
+  border-color: #475569;
+  color: #facc15; /* Warna ikon berubah kuning cerah (matahari) */
+}
+body.dark-mode select,
+body.dark-mode input,
+body.dark-mode .filter-select {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+  border: 1px solid #475569 !important;
+}
+body.dark-mode table td {
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+body.dark-mode [class*="watcher"] {
+  background-color: #334155 !important;
+  color: #94a3b8 !important;
+  border: 1px solid #475569 !important;
+}
+
+body.dark-mode table th,
+body.dark-mode table thead th {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+  border-bottom: 2px solid #475569 !important;
+}
+body.dark-mode table td {
+  background-color: transparent !important;
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+body.dark-mode table tbody tr:hover {
+  background-color: #0f172a !important;
+}
+body.dark-mode ::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background-color: #475569;
+  border-radius: 8px;
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b;
+}
+body.dark-mode table th,
+body.dark-mode table td {
+  background-color: transparent !important;
+  color: #cbd5e1 !important;
+  border: none !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+body.dark-mode table {
+  border: none !important;
+}
+body.dark-mode table th:first-child {
+  border-top-left-radius: 12px !important;
+}
+body.dark-mode table th:last-child {
+  border-top-right-radius: 12px !important;
+}
+
+body.dark-mode .search-box-container {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+body.dark-mode .search-box-container input {
+  background-color: transparent !important;
+  color: #f8fafc !important;
+  border: none !important;
+}
+body.dark-mode .modal-content,
+body.dark-mode .modal-container,
+body.dark-mode .modal-box,
+body.dark-mode .paket-detail-card {
+  background-color: #1e293b !important;
+  border: 1px solid #475569 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+}
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer,
+body.dark-mode .paket-items {
+  background-color: transparent !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode .modal-header h4,
+body.dark-mode .form-group label {
+  color: #f8fafc !important;
+}
+body.dark-mode .paket-detail-name {
+  color: #f8fafc !important;
+}
+body.dark-mode .paket-item-badge {
+  background-color: #475569 !important;
+  color: #f8fafc !important;
+  border: 1px solid #64748b !important;
+}
+body.dark-mode textarea {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+  border: 1px solid #475569 !important;
+}
+body.dark-mode ::placeholder {
+  color: #94a3b8 !important;
+}
 .left-panel {
   flex: 1;
   background: linear-gradient(135deg, #2b32b2, #1488cc);
@@ -255,7 +387,140 @@ input:focus {
   margin-bottom: 10px;
   color: #111;
 }
+/* Tampilan Dashboard Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.dashboard-header h2 {
+  font-size: 1.8rem;
+  color: #0f172a;
+  margin: 0 0 5px 0;
+}
+.text-subtitle {
+  color: #64748b;
+  margin: 0;
+  font-size: 1rem;
+}
+.btn-theme-toggle {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.2rem;
+  color: #64748b;
+  cursor: pointer;
+}
+.alert-banner {
+  background: linear-gradient(90deg, #ff3b30 0%, #ff4b40 100%);
+  border-radius: 16px;
+  padding: 20px 25px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  color: white;
+  box-shadow: 0 10px 15px -3px rgba(255, 59, 48, 0.3);
+}
+.alert-icon {
+  font-size: 1.8rem;
+  margin-right: 20px;
+}
+.alert-text {
+  flex: 1;
+}
+.alert-text h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.alert-text p {
+  margin: 4px 0 0 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+.btn-alert-action {
+  background: white;
+  color: #ff3b30;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.dashboard-grid {
+  display: grid;
+  /* Membuat kolom otomatis sejajar, minimal lebar 300px */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+.dash-card {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+.icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 1.5rem;
+}
+.bg-blue {
+  background: #2563eb;
+}
+.bg-green {
+  background: #10b981;
+}
 
+.stat-number {
+  font-weight: 800;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+.card-body h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+  font-style: italic;
+  font-weight: 900;
+}
+.title-blue {
+  color: #2563eb;
+}
+.title-black {
+  color: #0f172a;
+}
+.card-body p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 25px;
+}
+.card-link {
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 800;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* Batas Header Dashboar */
 .search-container {
   display: flex;
   gap: 10px;

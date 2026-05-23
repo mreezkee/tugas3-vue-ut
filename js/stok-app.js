@@ -102,6 +102,12 @@ var app = new Vue({
     //Variable penampung form
   },
 
+  mounted: function () {
+    // Cek ingatan browser saat halaman dimuat
+    if (localStorage.getItem("temaSitta") === "dark") {
+      document.body.classList.add("dark-mode");
+    }
+  },
   //WATCHERS (Memantau Perubahan Data)
   watch: {
     // Watcher 1: Jika pilihan UT Daerah berubah, otomatis reset Kategori MK ke "Semua"

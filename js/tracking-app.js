@@ -86,7 +86,12 @@ var app = new Vue({
       },
     ],
   },
-
+  mounted: function () {
+    // Cek ingatan browser saat halaman dimuat
+    if (localStorage.getItem("temaSitta") === "dark") {
+      document.body.classList.add("dark-mode");
+    }
+  },
   computed: {
     //Logika filter doTersaring
     doTersaring: function () {
