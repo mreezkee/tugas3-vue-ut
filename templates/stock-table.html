@@ -1,0 +1,302 @@
+<!-- Templates stock bahan ajar-->
+<template id="tpl-stock">
+  <div>
+    <section class="content-area">
+      <div class="card filter-section">
+        <h3><i class="fa-solid fa-filter"></i> Filter & Sort</h3>
+
+        <div class="filter-group-container">
+          <div class="filter-item">
+            <label><i class="fa-solid fa-location-dot"></i> UT Daerah</label>
+            <select v-model="filterUpbjj" class="filter-select">
+              <option value="">Semua UT</option>
+              <option v-for="lokasi in upbjjList" :value="lokasi">
+                {{ lokasi }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-item" v-show="filterUpbjj !== ''">
+            <label><i class="fa-solid fa-layer-group"></i> Kategori MK</label>
+            <select v-model="filterKategori" class="filter-select">
+              <option value="">Semua Kategori</option>
+              <option v-for="kat in kategoriList" :value="kat">
+                {{ kat }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label
+              ><i class="fa-solid fa-boxes-stacked"></i> Filter Status</label
+            >
+            <select v-model="filterStatus" class="filter-select">
+              <option value="">Semua Status</option>
+              <option value="reorder">Butuh Re-order (Kosong & Menipis)</option>
+              <option value="kosong">Hanya Stok Kosong</option>
+              <option value="menipis">Hanya Stok Menipis</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label><i class="fa-solid fa-arrow-down-a-z"></i> Urutkan</label>
+            <select v-model="sortBy" class="filter-select">
+              <option value="judul_asc">Judul (A - Z)</option>
+              <option value="judul_desc">Judul (Z - A)</option>
+              <option value="stok_asc">Stok (Terkecil - Terbesar)</option>
+              <option value="stok_desc">Stok (Terbesar - Terkecil)</option>
+              <option value="harga_asc">Harga (Temurah - Termahal)</option>
+              <option value="harga_desc">Harga (Termahal - Termurah)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-action-container">
+          <button @click="resetFilter" class="btn-reset">
+            <i class="fa-solid fa-rotate-right"></i> Reset Filter
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-area">
+      <div class="card">
+        <div class="table-header-container">
+          <div class="table-title-group">
+            <h3 class="table-title">
+              <i class="fa-solid fa-book"></i> Stok Bahan Ajar
+            </h3>
+            <span class="watcher-badge">
+              <i class="fa-solid fa-satellite-dish watcher-icon"></i>
+              <strong class="watcher-label">Watcher:</strong> {{ logAktivitas }}
+            </span>
+          </div>
+          <button @click="bukaModalTambah" class="btn-tambah">
+            <i class="fa-solid fa-plus"></i> Tambah Bahan Ajar
+          </button>
+        </div>
+
+        <div class="table-responsive animasi-table">
+          <table class="table-stok">
+            <thead>
+              <tr>
+                <th>KODE</th>
+                <th>JUDUL</th>
+                <th>KATEGORI</th>
+                <th>UPBJJ</th>
+                <th>LOKASI RAK</th>
+                <th>HARGA</th>
+                <th>STOK</th>
+                <th>SAFETY</th>
+                <th>STATUS</th>
+                <th>AKSI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(buku, index) in stokTersaring" :key="buku.kode">
+                <td>{{buku.kode}}</td>
+                <td>{{buku.judul}}</td>
+                <td>{{buku.kategori}}</td>
+                <td>{{buku.upbjj}}</td>
+                <td>{{buku.lokasiRak}}</td>
+
+                <td class="text-nowrap">{{buku.harga | formatRupiah}}</td>
+                <td class="text-nowrap">{{buku.qty | formatSatuan}}</td>
+
+                <td class="text-nowrap">{{buku.safety | formatSatuan}}</td>
+
+                <td
+                  :title="'Catatan: ' + stripHTML(buku.catatanHTML)"
+                  style="cursor: help"
+                >
+                  <span
+                    v-if="buku.qty === 0"
+                    class="status-badge badge-kosong status-live-blink"
+                  >
+                    <i class="fa-solid fa-circle-xmark"></i> Kosong
+                  </span>
+                  <span
+                    v-else-if="buku.qty < buku.safety"
+                    class="status-badge badge-menipis status-live-blink"
+                  >
+                    <i class="fa-solid fa-triangle-exclamation"></i> Menipis
+                  </span>
+                  <span v-else class="status-badge badge-aman">
+                    <i class="fa-solid fa-circle-check"></i> Aman
+                  </span>
+                </td>
+
+                <td style="display: flex; gap: 5px">
+                  <button
+                    @click="bukaModalEdit(buku)"
+                    class="status-badge badge-jemput"
+                    style="border: none; cursor: pointer"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                  </button>
+                  <button
+                    @click="hapusBuku(buku.kode)"
+                    class="status-badge badge-kosong"
+                    style="border: none; cursor: pointer"
+                  >
+                    <i class="fa-solid fa-trash"></i> Hapus
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="modal-overlay" v-if="showModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>
+            <i class="fa-solid fa-book"></i> {{ isEditMode ? 'EditBahanAjar' :
+            'Tambah Bahan Ajar' }}
+          </h4>
+          <button @click="tutupModal" class="btn-close">&times;</button>
+        </div>
+
+        <form ref="formStok" @submit.prevent="simpanBuku">
+          <div class="modal-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Kode Barang</label>
+                <input
+                  type="text"
+                  v-model="baruBuku.kode"
+                  :disabled="isEditMode"
+                  :class="{ 'input-readonly': isEditMode }"
+                  required
+                  placeholder="Contoh: EKMA4116"
+                  @keydown.enter.prevent="cekValidasiDanSimpan"
+                />
+              </div>
+              <div class="form-group">
+                <label>Judul Buku</label>
+                <input
+                  type="text"
+                  v-model="baruBuku.judul"
+                  required
+                  placeholder="Contoh: Pengantar Manajemen"
+                  @keydown.enter.prevent="cekValidasiDanSimpan"
+                />
+              </div>
+              <div class="form-group">
+                <label>Kategori</label>
+                <select
+                  v-model="baruBuku.kategori"
+                  required
+                  @keydown.enter.prevent="cekValidasiDanSimpan"
+                >
+                  <option value="">Pilih Kategori</option>
+                  <option v-for="kat in kategoriList" :value="kat">
+                    {{ kat }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>UT Daerah (UPBJJ)</label>
+                <select
+                  v-model="baruBuku.upbjj"
+                  required
+                  @keydown.enter.prevent="cekValidasiDanSimpan"
+                >
+                  <option value="">Pilih UT Daerah</option>
+                  <option v-for="lokasi in upbjjList" :value="lokasi">
+                    {{ lokasi }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Lokasi Rak</label>
+                <input
+                  type="text"
+                  v-model="baruBuku.lokasiRak"
+                  required
+                  placeholder="Contoh: R1-A3"
+                  @keydown.enter.prevent="cekValidasiDanSimpan"
+                />
+              </div>
+              <div class="form-group">
+                <label>Harga (Rp)</label>
+                <input
+                  type="number"
+                  v-model.number="baruBuku.harga"
+                  required
+                  placeholder="65000"
+                  @keydown.enter.prevent="cekValidasiDanSimpan"
+                />
+              </div>
+              <div class="form-group">
+                <label>Jumlah Stok (QTY)</label>
+                <input
+                  type="number"
+                  v-model.number="baruBuku.qty"
+                  required
+                  placeholder="28"
+                  @keydown.enter.prevent="cekValidasiDanSimpan"
+                />
+              </div>
+              <div class="form-group">
+                <label>Safety Stock</label>
+                <input
+                  type="number"
+                  v-model.number="baruBuku.safety"
+                  required
+                  min="0"
+                  placeholder="0"
+                  @keydown.enter.prevent="cekValidasiDanSimpan"
+                />
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 15px">
+              <label>Catatan / HTML</label>
+              <textarea
+                v-model="baruBuku.catatanHTML"
+                required
+                rows="3"
+                style="
+                  padding: 10px;
+                  border: 1px solid #cbd5e1;
+                  border-radius: 6px;
+                  font-family: inherit;
+                "
+                placeholder="Masukkan catatan atau kode HTML di sini..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" @click="tutupModal" class="btn-batal">
+              Batal
+            </button>
+            <button type="submit" class="btn-simpan">Simpan Data</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="system-overlay" v-if="isProcessing || isSuccess">
+      <div class="system-popup">
+        <div v-if="isProcessing">
+          <div class="spinner"></div>
+          <h3 style="color: #1e293b; margin: 0">Memproses Data...</h3>
+          <p style="color: #64748b; margin-top: 5px">
+            Mengamankan ke dalam sistem
+          </p>
+        </div>
+        <div v-if="isSuccess">
+          <i class="fa-solid fa-circle-check success-icon"></i>
+          <h3 style="color: #10b981; margin: 0">Berhasil Disimpan!</h3>
+          <p style="color: #64748b; margin-top: 5px">
+            Data berhasil diperbarui
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<!-- batas akhir Templates stock bahan ajar-->

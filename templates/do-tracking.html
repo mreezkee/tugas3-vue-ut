@@ -1,0 +1,336 @@
+<!-- Template Tracking -->
+<template id="tpl-tracking">
+  <div>
+    <section class="content-area">
+      <div class="card">
+        <div class="table-header-container">
+          <div class="table-title-group search-wrapper">
+            <div class="search-box-container">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="text"
+                v-model="inputPencarian"
+                @keyup.enter="terapkanPencarian"
+                @keyup.esc="resetPencarian"
+                placeholder="Ketik Nomor DO / NIM lalu tekan Enter (Esc untuk mereset)..."
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-area">
+      <div class="card">
+        <div class="table-header-container">
+          <h3 class="table-title">
+            <i class="fa-solid fa-truck-fast"></i> Riwayat Delivery Order
+          </h3>
+          <button @click="bukaModalTambah" class="btn-tambah">
+            <i class="fa-solid fa-plus"></i> Input DO Baru
+          </button>
+        </div>
+
+        <div class="table-responsive animasi-table">
+          <table class="table-stok">
+            <thead>
+              <tr>
+                <th>NO DO</th>
+                <th>NIM / NAMA</th>
+                <th>PAKET</th>
+                <th>EKSPEDISI</th>
+                <th>TANGGAL</th>
+                <th>STATUS</th>
+                <th>AKSI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="doTersaring.length === 0">
+                <td colspan="7" class="table-empty-state">
+                  <i class="fa-solid fa-box-open"></i><br />
+                  Data Delivery Order tidak ditemukan.
+                </td>
+              </tr>
+
+              <tr v-for="item in doTersaring" :key="item.noDO">
+                <td><strong>{{ item.noDO }}</strong></td>
+                <td>{{ item.nim }}<br /><small>{{ item.nama }}</small></td>
+                <td>
+                  <strong>{{ item.paket }}</strong>
+                </td>
+                <td>{{ item.ekspedisi }}</td>
+
+                <td class="text-nowrap">
+                  {{ item.tanggalKirim | formatTanggalIndo }}
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    :class="{
+                          'badge-gudang': item.status === 'Proses Gudang',
+                          'badge-jemput': item.status === 'Penjemputan',
+                          'badge-kosong': item.status === 'Dalam Perjalanan',
+                          'badge-kirim': item.status === 'Dikirim',
+                          'badge-terima': item.status === 'Sudah Diterima',
+                          'status-live-blink': item.status !== 'Sudah Diterima'
+                        }"
+                  >
+                    <i
+                      class="fa-solid fa-warehouse"
+                      v-if="item.status === 'Proses Gudang'"
+                    ></i>
+                    <i
+                      class="fa-solid fa-truck-ramp-box"
+                      v-else-if="item.status === 'Penjemputan'"
+                    ></i>
+                    <i
+                      class="fa-solid fa-route"
+                      v-else-if="item.status === 'Dalam Perjalanan'"
+                    ></i>
+                    <i
+                      class="fa-solid fa-truck-fast"
+                      v-else-if="item.status === 'Dikirim'"
+                    ></i>
+                    <i
+                      class="fa-solid fa-house-circle-check"
+                      v-else-if="item.status === 'Sudah Diterima'"
+                    ></i>
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    @click="bukaModalProgress(item)"
+                    class="btn-tambah"
+                    style="padding: 6px 12px; font-size: 0.85rem"
+                  >
+                    <i class="fa-solid fa-clock-rotate-left"></i> Update
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="modal-overlay" v-if="showModalTambah" v-cloak>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>
+            <i class="fa-solid fa-clipboard-list"></i> Buat Delivery Order Baru
+          </h4>
+          <button @click="showModalTambah = false" class="btn-close">
+            &times;
+          </button>
+        </div>
+
+        <form @submit.prevent="simpanDO">
+          <div class="modal-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nomor DO (Auto)</label>
+                <input
+                  type="text"
+                  v-model="formDO.noDO"
+                  disabled
+                  class="input-readonly"
+                />
+              </div>
+              <div class="form-group">
+                <label>Tanggal Kirim (Auto)</label>
+                <input type="date" v-model="formDO.tanggalKirim" required />
+              </div>
+              <div class="form-group">
+                <label>NIM Mahasiswa</label>
+                <input
+                  type="text"
+                  v-model="formDO.nim"
+                  required
+                  placeholder="Contoh: 041234567"
+                />
+              </div>
+              <div class="form-group">
+                <label>Nama Mahasiswa</label>
+                <input
+                  type="text"
+                  v-model="formDO.nama"
+                  required
+                  placeholder="Nama Lengkap"
+                />
+              </div>
+              <div class="form-group" style="grid-column: span 2">
+                <label>Paket Bahan Ajar</label>
+                <select v-model="formDO.kodePaket" required>
+                  <option value="">-- Pilih Paket Bahan Ajar --</option>
+                  <option v-for="pkt in paketList" :value="pkt.kode">
+                    {{pkt.kode}} - {{ pkt.nama }}
+                  </option>
+                </select>
+
+                <div class="paket-detail-premium" v-if="detailPaketTerpilih">
+                  <div class="premium-header">
+                    <div class="header-left">
+                      <span class="label-blue">DETAIL ISI PAKET</span>
+                      <strong class="paket-name"
+                        >{{ detailPaketTerpilih.nama }}</strong
+                      >
+                    </div>
+                    <div class="header-right">
+                      <span class="label-gray">TOTAL HARGA</span>
+                      <strong class="paket-price"
+                        >{{ detailPaketTerpilih.harga | formatRupiah }}</strong
+                      >
+                    </div>
+                  </div>
+
+                  <div class="premium-items-container">
+                    <div
+                      v-for="buku in detailPaketTerpilih.isiLengkap"
+                      class="premium-item"
+                    >
+                      <div class="item-icon">{{ buku.inisial }}</div>
+                      <div class="item-info">
+                        <span class="item-code">{{ buku.kode }}</span>
+                        <span class="item-title">{{ buku.judul }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Metode Pengiriman</label>
+                <select v-model="formDO.pengiriman" required>
+                  <option value="">-- Pilih Kurir Ekspedisi --</option>
+                  <option v-for="kirim in pengirimanList" :value="kirim.nama">
+                    {{ kirim.nama }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Total Harga Estimasi</label>
+                <input
+                  type="text"
+                  :value="formDO.totalHarga | formatRupiah"
+                  disabled
+                  class="input-readonly"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              @click="showModalTambah = false"
+              class="btn-batal"
+            >
+              Batal
+            </button>
+            <button type="submit" class="btn-simpan">Buat DO</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-overlay" v-if="showModalProgress" v-cloak>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4>
+            <i class="fa-solid fa-clock-rotate-left"></i> Timeline Progress: {{
+            doTerpilih ? doTerpilih.noDO: '' }}
+          </h4>
+          <button @click="showModalProgress = false" class="btn-close">
+            &times;
+          </button>
+        </div>
+
+        <form @submit.prevent="simpanProgress">
+          <div class="modal-body">
+            <div
+              class="timeline-container"
+              style="
+                background: #f8fafc;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                border: 1px solid #cbd5e1;
+              "
+            >
+              <h4
+                style="margin-bottom: 15px; font-size: 0.9rem; color: #475569"
+              >
+                RIWAYAT PERJALANAN
+              </h4>
+              <ul class="timeline-list">
+                <li v-for="jalan in doTerpilih?.perjalanan">
+                  <span class="time-text"
+                    ><i class="fa-regular fa-clock"></i> {{ jalan.waktu }}</span
+                  >
+                  <strong class="desc-text">{{ jalan.keterangan }}</strong>
+                </li>
+              </ul>
+            </div>
+
+            <hr
+              style="
+                border: 0;
+                border-top: 1px dashed #cbd5e1;
+                margin-bottom: 15px;
+              "
+            />
+
+            <h4 style="margin-bottom: 15px; font-size: 0.9rem; color: #2563eb">
+              <i class="fa-solid fa-plus"></i> TAMBAH PROGRESS BARU
+            </h4>
+            <div class="form-group">
+              <label>Pembaruan Status Utama Paket</label>
+              <select v-model="formProgress.statusBaru" required>
+                <option v-for="stat in statusPilihan" :value="stat">
+                  {{ stat }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-top: 15px">
+              <label>Keterangan Posisi / Perjalanan Baru</label>
+              <textarea
+                v-model="formProgress.keterangan"
+                required
+                rows="2"
+                class="form-control-textarea"
+                placeholder="Contoh: Paket telah tiba di gudang penyortiran Jakarta..."
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              @click="showModalProgress = false"
+              class="btn-batal"
+            >
+              Batal
+            </button>
+            <button type="submit" class="btn-simpan">
+              <i class="fa-solid fa-location-arrow"></i> Update Progress
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="system-overlay" v-if="isProcessing || isSuccess" v-cloak>
+      <div class="system-popup">
+        <div v-if="isProcessing">
+          <div class="spinner"></div>
+          <h3 style="color: #1e293b; margin: 0">Memproses Data...</h3>
+        </div>
+        <div v-if="isSuccess">
+          <i class="fa-solid fa-circle-check success-icon"></i>
+          <h3 style="color: #10b981; margin: 0">Berhasil Disimpan!</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<!-- Batas Akhir Template Tracking -->

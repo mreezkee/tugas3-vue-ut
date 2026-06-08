@@ -150,7 +150,7 @@ Vue.component("ba-stock-table", {
         }
 
         event.preventDefault(); // Mencegah browser melakukan aksi ganda
-        this.cekValidasiDanSimpan(); // Panggil sistem penjaga gawang kita
+        this.cekValidasiDanSimpan(); // Panggil sistem penjaga gawang
       }
     },
 
