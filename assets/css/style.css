@@ -906,6 +906,107 @@ input:focus {
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
+
+/* Tampilan Pilih Paket */
+.paket-detail-premium {
+  background-color: #f8fafc;
+  border: 1px solid #bfdbfe;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 15px;
+  grid-column: span 2;
+}
+.premium-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.label-blue {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #3b82f6;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.label-gray {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  text-align: right;
+}
+.paket-name {
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.paket-price {
+  color: #10b981;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+.premium-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.premium-item {
+  display: flex;
+  align-items: center;
+  background-color: #cbd5e1;
+  padding: 12px 15px;
+  border-radius: 12px;
+}
+.item-icon {
+  background-color: #94a3b8;
+  color: #2563eb;
+  font-weight: 800;
+  font-size: 0.85rem;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin-right: 15px;
+}
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+.item-code {
+  color: #3b82f6;
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+.item-title {
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+body.dark-mode .paket-detail-premium {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+body.dark-mode .premium-item {
+  background-color: #334155;
+}
+body.dark-mode .item-title,
+body.dark-mode .paket-name {
+  color: #f8fafc;
+}
+body.dark-mode .item-icon {
+  background-color: #475569;
+  color: #60a5fa;
+}
+/* Batas Akhir Tampilan Pilih Paket */
 @media (max-width: 480px) {
   .form-grid {
     grid-template-columns: 1fr;
@@ -1155,6 +1256,37 @@ input.input-readonly-success {
 }
 .paket-item-badge i {
   color: #94a3b8;
+}
+
+.text-nowrap {
+  white-space: nowrap !important;
+}
+.action-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.btn-action {
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-action:hover {
+  opacity: 0.8;
+}
+
+body.dark-mode .form-control-textarea {
+  background-color: #334155;
+  color: #f8fafc;
+  border: 1px solid #475569;
+}
+.form-control-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-family: inherit;
+  resize: vertical;
 }
 @keyframes statusPulse {
   0% {
